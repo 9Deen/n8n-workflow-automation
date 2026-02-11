@@ -1,0 +1,120 @@
+{
+  "name": "Summary",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d395a4e5-2c54-4c0d-a6c4-00f3c5bc7394",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/kesinee-bo/4613249_DataScience/refs/heads/main/16_LinearRegression.md",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "98b1adc6-26ae-4b0f-acec-9040c331c897",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=สรุปเนื้อหาต่อไปนี้ไม่เกิน 1000 คำ\n\n{{ $json.data }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "11ad8e64-ea4c-46f7-a8d4-d0fd653bab26",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-14b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        208
+      ],
+      "id": "876e23c3-407b-4d69-ba8e-aea5311d01c7",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "pcfCnC3okW9Htuqg",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "AI Agent": [
+      {
+        "json": {
+          "output": "**การถดถอยเชิงเส้น (Linear Regression)** คือเทคนิคการวิเคราะห์ข้อมูลและการเรียนรู้ของเครื่องที่ใช้หาความสัมพันธ์เชิงเส้นระหว่างตัวแปรหนึ่ง (ตัวแปรอิสระ) กับตัวแปรอื่นหนึ่ง (ตัวแปรตาม) เพื่อสร้างสมการเส้นตรงเทียบเคียงค่าตัวแปรตามจากค่าตัวแปรอิสระ ถือเป็นเครื่องมือพื้นฐานที่ใช้พยากรณ์ค่าตัวเลขต่อเนื่อง เช่น ทำนายราคาบ้านจากขนาดพื้นที่ หรือทำนายคะแนนสอบจากชั่ำงอ่านหนังสือ ด้วยความง่ายในการอธิบาย สมการที่สร้างขึ้นสามารถใช้ตีความได้โดยตรง แม้ใช้มีความคลาดเคลื่อนบ้าง แต่เหมาะสำหรับการเริ่มต้นในด้านวิทยาการข้อมูล\n\n**คำศัพท์หลัก**:\n- **ตัวแปรอิสระ (Independent Variable)**: ปัจจัยอินพุตที่ใช้ทำนาย (เช่น ชั่ำงอ่านหนังสือ)  \n- **ตัวแปรตาม (Dependent Variable)**: ค่าที่ต้องการพยากรณ์ (เช่น คะแนนสอบ)  \n- **ความชัน (Slope)**: แสดงผลการเปลี่ยนแปลงของตัวแปรตามเมื่อกลับตัวแปรอิสระเพิ่ม 1 หน่วย (เช่น $b_1$)  \n- **จุดตัดแกน $y$ (Intercept)**: ค่าคงที่ของสมการ (เช่น $b_0$) ที่แสดงค่าตัวแปรตามเมื่อกลับตัวแปรอิสระเป็นศูนย์  \n- **ความคลาดเคลื่อน (Error/Residual)**: ความฉันที่ระหว่างค่าจริงกับค่าทำนาย  \n- **เส้นที่เหมาะสมที่สุด (Line of Best Fit)**: เส้นตรงที่ใชั้วิธี **Ordinary Least Squares (OLS)** เพื่อปรับให้ผลรวมของกำลังสองความคลาดเคลื่อนน้อยที่สุด สมการทั่วไป: $\\widehat{Y} = b_0 + b_1X$  \n\nการประเมินความแม่นยำเจนใช้ **$R^2$** (Coefficient of Determination) ซึ่งมีค่าระหว่าง 0-1 ค่าสูงกว่า 1 แปลว่าโมเดลอธิบายความแปรปรวนของข้อมูลได้ดี ยิ่ง $R^2$ ใกล้ 1 ยิ่งแม่นยำเช่น $R^2 = 0.93$ ในตัวอย่างหมายถึง 93% ของความแปรปรวนของ $Y$ ถูกอธิบายโดยโมเดล นอกจากนี้ ใช้ค่า **Mean Squared Error (MSE)** หรือ **Mean Absolute Error (MAE)** เพื่อวัดข้อผิดพลาดเฉลี่ยของโมเดล\n\n---\n\n### **กรณีศึกษาตัวอย่าง**\nตัวอย่างแรก: ใช้ Python สร้างโมเดลพยากรณ์คะแนนสอบจากชั่ำงอ่านหนังสือ โดย:\n1. **สร้างข้อมูลสังเคราะห์** สุ่มค่า Hours 0-12 แล้วเติม Noise ลงในสมการ $Y = 30 + 5X + \\text{noise}$  \n2. **สร้างกราฟ scatter plot** แสดงจุดข้อมูล Between Hours และ Score ซึ่งสึ่งการกระจายเชิงเส้นบวก  \n3. **ฝึกสอนโมเดล** ด้วย `LinearRegression()` จาก scikit-learn ซึ่งหาค่า $b_0$ และ $b_1$ ที่เหมาะสมที่สุด  \n4. โมเดลอาจให้ค่าสมการ $\\widehat{Y} = 30.48 + 4.91X$ โดย $R^2$ ประมาณ 0.93 กล่าวถึงความแม่นยำสูง  \n5. **พยากรณ์ค่าใหม่**: สำหรับนักเรียนที่อ่าน 8 ชั่ำ ทำนายคะแนนน่าจะ ~69.74 คะแนน  \n6. **แสดงกราฟ** ระหว่างตัวแปรจริงและโมเดลเทียบเคียง โดยเส้นสีแดงเป็นเส้นที่เหมาะสมที่สุด  \n\n---\n\n### **การถดถอยเชิงเส้นพหุ (Multiple Linear Regression)**\nเมื่อมีตัวแปรอิสระหลายตัว (เช่น น้ำหนัก ส่วนสูง รอบสะโพก) สมการทั่วไปคือ:\n$$\n\\widehat{Y} = b_0 + b_1X_1 + b_2X_2 + ... + b_nX_n\n$$\nใช้ชุดข้อมูล [Body Measurements Dataset](https://www.openintro.org/data/index.php?data=bdims) ด้วยขั้นตอน:\n1. **โหลดและสำรวจข้อมูล**:\n   - คัดลอกคอลัมน์: `sex, age, weight, height, hip, waist`  \n   - ตรวจสอบหาข้อมูลหาย (missing values) และเปรียบเทียบแมตริกซ์ correlation ว่าค่าตัวแปรใดมีความสัมพันธ์กัน  \n2. สร้างค่า BMI จาก Formula $bmi = \\text{weight} / (\\text{height}/100)^2$  \n3. **แบ่งข้อมูลเป็น Train/Test Sets** ด้วย `train_test_split()`  \n4. **ใช้ GridSearchCV ค้นหาพารามิเตอร์สุ่ม**, เช่น `fit_intercept` และ `positive`  \n5. โมเดลอาจให้ค่าสัมประสิทธิ์:\n   - $b_1 (\\text{sex}) = -0.926$: เพศหญิงมีขนาดรอบเอวลดลง ~0.93 cm ส่วนอื่นคงที่  \n   - $b_3 (\\text{weight}) = 0.167$: น้ำหนักเพิ่มขึ้น 1 kg ส่งผลให้รอบเอวเพิ่ม ~0.17 cm  \n   - $b_6 (\\text{bmi}) = 1.02$: BMI บวก 1 หน่วย ส่งผลให้รอบเอวเพิ่ม ~1 cm (สัมประสิทธิ์สูงสุด)  \n6. **ประเมินผลลัพธ์**:\n   - ค่า $R^2$ และ MSE บนชุด Test  \n   - สร้างกราฟทดสอบค่าใหม่ (ตัวอย่างนักเรียน 2 ราย)  \n7. **บันทึกโมเดล** ด้วย `joblib.dump()` เพื่อใช้งานต่อไป  \n\n---\n\n### **การนำโมเดลไปใช้จริงด้วย Flask API**\n1. ใช้ **Flask + ngrok** สร้าง API ที่ดึงข้อมูลจากโมเดลผ่าน HTTP:  \n   - ติดตั้ง `pyngrok`  \n   - รัน Flask พร้อมเปิด URL สาธารณะด้วย `ngrok.connect()`  \n2. **ทดสอบการเรียกใช้ API**:  \n   - ผ่าน Python (`requests`)  \n   - ใช้ Command Line (`curl`)  \n   - หรือร่วมกับ Postman (ส่งข้อมูล JSON เช่นเพศ อายุ น้ำหนัก ส่วนสูง รอบสะโพก และ BMI)  \n3. **สร้างหน้าเว็บ JavaScript ฉับพลัน**:\n   - ใช้ HTML สำหรับกรอกข้อมูล  \n   - คำนวณ BMI ด้วยรหัส JavaScript ด้วยส่วนสูง (cm) และน้ำหนัก (kg)  \n   - ส่งข้อมูลผ่าน `fetch()` เมื่อมีการ interrupted ปุ่ม  \n   - แสดงผลลัพธ์บนหน้าเว็บ  \n\n**ตัวอย่าง**:\n- เมื่ออ่านค่าตัวอย่าง: `sex=0`, `age=28`, `weight=75`, `height=178`, `hip=98`  \n- ค่า BMI คำนวณ: $75 / (1.78^2) = 23.67$  \n- API อาจตอบค่าที่ทำนาย: $waist = 75.97 cm$  \n\n---\n\n### **การบ้าน: ทำนายราคาขายรถมือสอง**\nใช้ตัวอย่างที่สอง [Used Car Price Prediction Dataset](https://www.kaggle.com/datasets/taeefnajib/used-car-price-prediction-dataset) เพื่อสร้างโมเดลที่ทำนาย **Resale Value** จาก:\n- ปีการผลิต (Year)  \n- ระยะทาง (Miles Driven)  \n- ประเภทเชื้อเพลิง (Fuel Type)  \n- ขนาดเครื่องยนต์ (Engine Size)  \n... เป็นต้น  \n\n---\n\n### **สรุปการใช้งาน**\n**Linear Regression** เป็นเครื่องมือสำคัญสำหรับการเริ่มต้น เช่น:\n- ทำนายระหว่างตัวแปร (เช่น ค่า January 2024)  \n- วิเคราะห์ผลกระทบของปัจจัยต่างๆ (เช่น BMI ปัจจัยหลักต่อบาง_SIZE)  \n- ติดตั้งโมเดลบนเว็บ (ด้วย Flask + ngrok)  \n\nแม้จะไม่สามารถทำนายความซับซ้อนของโลกได้สมบูรณ์ แต่เป็นพื้นฐานที่สำคัญสำหรับเทคนิคการเรียนรู้ของเครื่องอื่นๆ และนำเสนอผลลัพธ์ได้ชัดเจนทั้งในรูปแมตริกซ์ค่าใช้จ่าย (RMSE, $R^2$) และการวิเคราะห์แปลงข้อมูลในกราฟ จึงเหมาะสำหรับการเรียนรู้และใช้งานในธุรกิจจริงได่้มาก โดยเฉพาะการเปิดเป็น API ให้ผู้ใช้อย่างง่ายด้วย **JavaScript** หรือระบบเว็บอื่นๆ (เช่น **React**, **Flutter** ⇨ เพิ่มเติม)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bbc014b3-01dd-44e1-9aba-cf4c40959f6f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "57118db06c066c6a11e5e40e4b6df1148cf86f5c80479e5f7687d79dad1e59f9"
+  },
+  "id": "CrfuF8wwPOpgHQFU",
+  "tags": []
+}
