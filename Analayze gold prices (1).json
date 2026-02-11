@@ -1,0 +1,241 @@
+{
+  "name": "Analayze gold prices",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "29a7a6e9-23f3-4262-82c4-d7024ca32e32",
+      "name": "Daily 07:00 Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "days_back",
+              "value": 14,
+              "type": "number"
+            },
+            {
+              "id": "id-2",
+              "name": "analysis_language",
+              "value": "Thai",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ec39c6ee-7516-4b8b-82a6-1b2d0d9953d2",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://query1.finance.yahoo.com/v8/finance/chart/^GSPC",
+        "options": {}
+      },
+      "id": "4ea6628e-8a2b-4275-a87c-8a0786872116",
+      "name": "Fetch Gold Price Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        704,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ข้อมูลราคาทองคำล่าสุดและราคาย้อนหลัง: {{ $json }}\n\nช่วยวิเคราะห์แนวโน้มราคาทองคำในเชิงเทคนิคแบบง่ายๆ\n\nประเมินจุดซื้อ (Support) และจุดขาย (Resistance) ที่สำคัญ\n\nให้คำแนะนำว่าควร 'ซื้อ' 'ขาย' หรือ 'ถือ' พร้อมเหตุผลประกอบ\n\nสรุปเนื้อหาทั้งหมดเป็นภาษาไทยที่อ่านง่าย กระชับ สำหรับส่งเป็นอีเมล"
+      },
+      "id": "af030a51-59c8-445b-8e32-3555e4d48044",
+      "name": "Analyze Gold Price",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        928,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "05dca453-fdd8-49fb-bb39-1b1bf2647336",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        528
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QzQSnZPMuEDnmv5r",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "email_subject",
+              "value": "=รายงานวิเคราะห์ราคาทองคำประจำวัน - {{ $now.format('dd/MM/yyyy') }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "email_body",
+              "value": "={{ $('Analyze Gold Price').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "recipient_email",
+              "value": "<__PLACEHOLDER_VALUE__your_email@example.com__>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b3f9308f-6291-41df-b9c5-899f51f6771c",
+      "name": "Prepare Email Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "naaydeen9@gmail.com",
+        "subject": "={{ $('Prepare Email Content').item.json.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $('Prepare Email Content').item.json.email_body }}",
+        "options": {}
+      },
+      "id": "2b885324-3464-48fa-9f93-b1773e72e03b",
+      "name": "Send Analysis Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        304
+      ],
+      "webhookId": "86f863f1-6edf-450a-8edd-a14f514c9671",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8JvqG2Y3GXLPTiUG",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily 07:00 Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Gold Price Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Gold Price Data": {
+      "main": [
+        [
+          {
+            "node": "Analyze Gold Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze Gold Price",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Gold Price": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Content": {
+      "main": [
+        [
+          {
+            "node": "Send Analysis Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5badd60d-bcbc-4cd3-8967-a0475be504d5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d48083b4c72f5badaf952f0368d1cb67e6e2b6dbdd669e08b792d21832922732"
+  },
+  "id": "DaCIz2KaPLTEXaJK7BfyG",
+  "tags": []
+}
