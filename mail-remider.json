@@ -1,0 +1,224 @@
+{
+  "name": "2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b15888dc-6432-4878-b169-fa7285826f5b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU",
+          "mode": "list",
+          "cachedResultName": "events1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "date",
+              "lookupValue": "={{ $today.plus({days: 1}).format(\"MM/dd/yyyy\") }}"
+            },
+            {
+              "lookupColumn": "isDone",
+              "lookupValue": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a84ed39e-1ad6-440e-9466-1482eeccae9f",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ypFsp68qoAI0a7lj",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "664234012@parichat.skru.ac.th",
+        "subject": "=แจ้งเตือนเรื่อง :  {{ $json.event }}",
+        "emailType": "text",
+        "message": "={{ $json.event }} ในวันที่ {{ DateTime.fromFormat($json.date, 'MM/dd/yyyy').toFormat('dd LLL yyyy') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cd121d1a-69b7-4e39-b3dd-91dcea338da5",
+      "name": "Send a message",
+      "webhookId": "d46f824b-4243-4487-b11c-1a0d9d94b5a9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jwMQ37q9bylJFb5s",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU",
+          "mode": "list",
+          "cachedResultName": "events1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pbdalK5Z5oZmOFOYivODsp54i-WDNIVwc9KckFT50SU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+            "isDone": "1"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "event",
+              "displayName": "event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "isDone",
+              "displayName": "isDone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "6869b93e-8222-4dc4-93fb-f097bfd4c854",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ypFsp68qoAI0a7lj",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "03c257e1-d540-4ce6-b0c4-2c4fff803458",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6690f299248c03a89cec8fddb7fe8646469edcd6e1e5e9d57c079896b000f098"
+  },
+  "id": "75zKQMcwLXrgZJGq",
+  "tags": []
+}
